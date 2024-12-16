@@ -1,4 +1,4 @@
-package fr.insa.brauard.AuthentificationService;
+2package fr.insa.brauard.AuthentificationService;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
