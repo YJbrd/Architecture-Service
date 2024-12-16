@@ -22,9 +22,9 @@ public class ConnexionDataBase {
 				e.printStackTrace(); 
 
 			}
-			//Établir la connexion
+			//ï¿½tablir la connexion
 			con= (Connection)DriverManager.getConnection("jdbc:mysql://srv-bdens.insa-toulouse.fr:3306/projet_gei_075","projet_gei_075", "aaquue5H");
-			System.out.println("Connecion à la BDD établie avec succès");
+			System.out.println("Connecion Ã  la BDD ï¿½tablie avec succï¿½s");
 			return con;
 		}catch(SQLException e) {
 			e.printStackTrace();
