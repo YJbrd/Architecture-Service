@@ -1,87 +1,71 @@
-package Controller.Connexion;
+package fr.insa.brauard.AuthentificationService.Controller;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class LogIn{
-	
-	public static boolean seConnecter(String nomUtilisateur, String motDePasse) {
-        String query = "SELECT * FROM User WHERE UserPseudo = ? AND UserPassword = ?";
-        try (Connection connection = ConnexionDataBase.getConnexionDataBase();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+import fr.insa.brauard.AuthentificationService.Model.User;
 
-            // Paramétrer les valeurs
-            preparedStatement.setString(1, nomUtilisateur);
-            preparedStatement.setString(2, motDePasse);
+@RestController
+public class LogIn {
 
-            // Exécuter la requête
-            ResultSet resultSet = preparedStatement.executeQuery();
+    @Autowired
+    private RestTemplate restTemplate;
 
-            // Vérifier si l'utilisateur existe dans la base de données
-            if (resultSet.next()) {
-                System.out.println("Connexion utilisateur réussie !");
-                return true;
+    // ReprÃ©sente la requÃªte de login, on attend un corps JSON avec username et password
+    @PostMapping("/login")
+    public String login(@RequestBody User loginRequest) {
+        String username = loginRequest.getUserPseudo();
+        String password = loginRequest.getUserPassword();
+
+        // RÃ©cupÃ©rer les paramÃ¨tres de connexion de la base de donnÃ©es depuis ConfigurationService
+        String dbHost = restTemplate.getForObject("http://localhost:8082/config/host", String.class);
+        String dbPort = restTemplate.getForObject("http://localhost:8082/config/port", String.class);
+        String dbProject = restTemplate.getForObject("http://localhost:8082/config/project", String.class);
+        String dbUser = restTemplate.getForObject("http://localhost:8082/config/username", String.class);
+        String dbPassword = restTemplate.getForObject("http://localhost:8082/config/password", String.class);
+
+        // Connexion Ã  la base de donnÃ©es
+        try (Connection con = DriverManager.getConnection(
+                "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbProject + "?serverTimezone=Europe/Paris", 
+                dbUser, dbPassword)) {
+
+            // PrÃ©paration de la requÃªte SQL pour vÃ©rifier les identifiants
+            String query = "SELECT * FROM User WHERE UserPseudo = ? AND UserPassword = ?";
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, username);
+            stm.setString(2, password);
+
+            // ExÃ©cution de la requÃªte
+            ResultSet rs = stm.executeQuery();
+
+            // Si un utilisateur est trouvÃ© avec ces identifiants
+            if (rs.next()) {
+                // On peut maintenant crÃ©er un objet User Ã  partir des rÃ©sultats de la base de donnÃ©es
+                int userId = rs.getInt("UserID");
+                String userReview = rs.getString("UserReview");
+                String userType = rs.getString("UserType");
+
+                // CrÃ©ation de l'objet User avec les informations de la base de donnÃ©es
+                User authenticatedUser = new User(userId, username, password, userReview, userType);
+
+                // Vous pouvez retourner un message de succÃ¨s ou un token d'authentification ici
+                return "Login successful! Welcome, " + authenticatedUser.getUserPseudo();
             } else {
-                System.out.println("Échec de la connexion. Veuillez vérifier vos informations d'identification.");
-                return false;
+                // Retourner un message d'erreur si l'utilisateur n'a pas Ã©tÃ© trouvÃ©
+                return "Invalid username or password.";
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return "Error during login process.";
         }
-    }
-
-    public static String getTypeUtilisateur(String nomUtilisateur) {
-        String typeUtilisateur = null;
-
-        String query = "SELECT UserType FROM User WHERE UserPseudo = ?";
-        try (Connection connection = ConnexionDataBase.getConnexionDataBase();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-            // Paramétrer la valeur du nom d'utilisateur
-            preparedStatement.setString(1, nomUtilisateur);
-
-            // Exécuter la requête
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                // Si un enregistrement est trouvé, récupérer le type d'utilisateur
-                if (resultSet.next()) {
-                    typeUtilisateur = resultSet.getString("UserType");
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return typeUtilisateur;
-    }
-    
-    public static int getIDUtilisateur(String nomUtilisateur) {
-        int IDUtilisateur = 0;
-
-        String query = "SELECT UserID FROM User WHERE UserPseudo = ?";
-        try (Connection connection = ConnexionDataBase.getConnexionDataBase();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-            // Paramétrer la valeur du nom d'utilisateur
-            preparedStatement.setString(1, nomUtilisateur);
-
-            // Exécuter la requête
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                // Si un enregistrement est trouvé, récupérer l' ID de l'utilisateru
-                if (resultSet.next()) {
-                    IDUtilisateur = resultSet.getInt("UserID");
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return IDUtilisateur;
     }
 }

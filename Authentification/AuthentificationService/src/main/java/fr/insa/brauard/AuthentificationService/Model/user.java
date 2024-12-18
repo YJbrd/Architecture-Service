@@ -1,37 +1,58 @@
-package Model.Users;
+package fr.insa.brauard.AuthentificationService.Model;
 
-import java.util.ArrayList;
+public class User {
+    private int userId;
+    private String userPseudo;
+    private String userPassword;
+    private String userReview;
+    private String userType;
 
-public class user {
+    public User(int userId, String userPseudo, String userPassword, String userReview, String userType) {
+        this.userId = userId;
+        this.userPseudo = userPseudo;
+        this.userPassword = userPassword;
+        this.userReview = userReview;
+        this.userType = userType;
+    }
 
-    private static int id;
-    private static String pseudo;
-    private static String password;
-    private ArrayList<?> review;
-    private String type;
-    
-    public user(int id, String pseudo, String password, ArrayList<?> review, String type) {
-    	this.id=id;
-    	this.pseudo=pseudo;
-    	this.password=password;
-    	this.review=new ArrayList<>();
-    	this.type=type;
+    // Getters et setters
+    public int getUserId() {
+        return userId;
     }
-    
-    public int getID (String pseudo) {
-    	return this.id;
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
-    
-    public int getPseudo(int ID) {
-    	return this.id;
+
+    public String getUserPseudo() {
+        return userPseudo;
     }
-    
-    public String getType(){
-    	return this.type;
+
+    public void setUserPseudo(String userPseudo) {
+        this.userPseudo = userPseudo;
     }
-    
-    public ArrayList<String> getReviex(){
-    	return this.getReviex();
+
+    public String getUserPassword() {
+        return userPassword;
     }
-    
+
+    public void setUserPassword(String userPassword) {
+        this.userPassword = userPassword;
+    }
+
+    public String getUserReview() {
+        return userReview;
+    }
+
+    public void setUserReview(String userReview) {
+        this.userReview = userReview;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
 }

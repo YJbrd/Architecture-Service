@@ -1,13 +1,8 @@
-package Model.Users;
+package fr.insa.brauard.AuthentificationService.Model;
 
-import java.util.ArrayList;
-
-public class vulnerable extends user {
-
-	public vulnerable(int id, String pseudo, String password, ArrayList<?> review, String type) {
-		super(id, pseudo, password, review, type);
-		// TODO Auto-generated constructor stub
-	}
-
-	
+public class Vulnerable extends User {
+	public Vulnerable(int id, String pseudo, String password, String review, String type) {
+        super(id, pseudo, password, review, type);
+    }
 }
+

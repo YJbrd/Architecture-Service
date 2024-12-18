@@ -1,35 +1,74 @@
-package Controller.Connexion;
+package fr.insa.brauard.AuthentificationService.Controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import fr.insa.brauard.BDDConnexionService.Model.ConnexionDataBase;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+
+/* TODO
+ * connecter login etc au service de connexion a la base de données
+ * arriver à supprimer un utilisateur (que si la requete vient du-dit utilisateur)
+ */
+@RestController
 public class Register {
 
-	// M�thode pour enregistrer un nouvel utilisateur
-	public static void enregistrerUtilisateur(String nomUtilisateur, String motDePasse, String typeUtilisateur) {
-	    String query = "INSERT INTO User (UserPseudo, UserPassword, UserType) VALUES (?, ?, ?)";
-	    try (Connection connection = ConnexionDataBase.getConnexionDataBase();
-	         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+    @Autowired
+    private ConnexionDataBase databaseConnectionService; // Injection du service de connexion
 
-	        // Param�trer les valeurs
-	        preparedStatement.setString(1, nomUtilisateur);
-	        preparedStatement.setString(2, motDePasse);
-	        preparedStatement.setString(3, typeUtilisateur);
+    @PostMapping(value = "/register/{pseudo}/{password}/{role}")
+    public ResponseEntity<String> createUser(@PathVariable String pseudo, 
+                                             @PathVariable String password,
+                                             @PathVariable String role) {
 
-	        // Ex�cuter la requ�te
-	        int rowCount = preparedStatement.executeUpdate();
+        // Vérification de l'absence de valeurs vides
+        if (pseudo == null || password == null || pseudo.isEmpty() || password.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Les informations (nom, prénom, mot de passe) doivent être fournies et ne peuvent être vides.");
+        }
 
-	        // V�rifier si l'enregistrement a r�ussi
-	        if (rowCount > 0) {
-	            System.out.println("Enregistrement r�ussi !");
-	        } else {
-	            System.out.println("�chec de l'enregistrement. Veuillez r�essayer.");
-	        }
+        // Validation du rôle (choix parmi "Benevole", "Vulnerable", "Validateur")
+        if (!role.equals("Benevole") && !role.equals("Vulnerable") && !role.equals("Validateur")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Le rôle doit être l'un des suivants: Benevole, Vulnerable, Validateur.");
+        }
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	}
+        // Connexion à la base de données et insertion des données
+        try (Connection con = databaseConnectionService.getConnection()) {
+            System.out.println("Tentative de création de l'utilisateur: " + pseudo);
 
+            // Requête pour insérer les données dans la table user
+            String query = "INSERT INTO User (UserPseudo, UserPassword, UserReview, UserType) VALUES (?, ?, ?, ?)";
+            PreparedStatement stm = con.prepareStatement(query);
+
+            // Définir les valeurs pour la requête préparée
+            stm.setString(1, pseudo); // Pseudo
+            stm.setString(2, password); // Mot de passe
+            stm.setString(3, null); // Avis (null pour l'instant)
+            stm.setString(4, role); // Type d'utilisateur (rôle choisi)
+
+            // Exécution de la requête
+            int rowsAffected = stm.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Utilisateur créé avec succès: " + pseudo + " " + " avec rôle " + role);
+                return ResponseEntity.status(HttpStatus.CREATED).body("Utilisateur créé avec succès avec le rôle " + role + ".");
+            } else {
+                System.out.println("Erreur lors de la création de l'utilisateur.");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la création de l'utilisateur.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Erreur SQL: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la création de l'utilisateur.");
+        }
+    }
 }
