@@ -16,11 +16,11 @@ public class ConnexionDataBase {
 
     public Connection getConnection() throws SQLException {
         // Récupération des paramètres de configuration via ConfigurationService
-        String dbHost = restTemplate.getForObject("http://localhost:8082/config/host", String.class);
-        String dbPort = restTemplate.getForObject("http://localhost:8082/config/port", String.class);
-        String dbProject = restTemplate.getForObject("http://localhost:8082/config/project", String.class);
-        String dbUser = restTemplate.getForObject("http://localhost:8082/config/username", String.class);
-        String dbPassword = restTemplate.getForObject("http://localhost:8082/config/password", String.class);
+        String dbHost = restTemplate.getForObject("http://ConfigurationService/config/host", String.class);
+        String dbPort = restTemplate.getForObject("http://ConfigurationService/config/port", String.class);
+        String dbProject = restTemplate.getForObject("http://ConfigurationService/config/project", String.class);
+        String dbUser = restTemplate.getForObject("http://ConfigurationService/config/username", String.class);
+        String dbPassword = restTemplate.getForObject("http://ConfigurationService/config/password", String.class);
         
         // Connexion à la base de données et renvoi de la connexion
         return DriverManager.getConnection(
