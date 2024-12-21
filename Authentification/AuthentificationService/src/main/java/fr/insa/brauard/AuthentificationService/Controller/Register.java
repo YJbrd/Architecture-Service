@@ -14,11 +14,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 
-/* TODO
- * connecter login etc au service de connexion a la base de données
- * arriver à supprimer un utilisateur (que si la requete vient du-dit utilisateur)
- */
 @RestController
+//@RequestMapping("/auth")
 public class Register {
 
     @Autowired
@@ -50,10 +47,10 @@ public class Register {
             PreparedStatement stm = con.prepareStatement(query);
 
             // Définir les valeurs pour la requête préparée
-            stm.setString(1, pseudo); // Pseudo
+            stm.setString(1, pseudo); 	// Pseudo
             stm.setString(2, password); // Mot de passe
-            stm.setString(3, null); // Avis (null pour l'instant)
-            stm.setString(4, role); // Type d'utilisateur (rôle choisi)
+            stm.setString(3, null); 	// Avis (null pour l'instant)
+            stm.setString(4, role); 	// Type d'utilisateur (rôle choisi)
 
             // Exécution de la requête
             int rowsAffected = stm.executeUpdate();

@@ -1,88 +1,80 @@
-package Model.Tasks;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Date;
-
-import Controller.Connexion.ConnexionDataBase;
+package fr.insa.brauard.RequestService.Controller;
 
 public class Task {
-	
-//	public boolean isValidated() {
-//		//ajouter conditions spécifiques
-//		return false;
-//	}
-	
-	// Méthode pour enregistrer une nouvelle tâche
-		public static void createNewTask(String description, int UserID, String dateLimite) {
 
-		    String query = "INSERT INTO Task (ProprioID, Status, Description, DateLimite, Validation) VALUES (?, ?, ?, ?, ?)";	
-		    
-		    try (Connection connection = ConnexionDataBase.getConnexionDataBase();
-		        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+    private int idTask; // Correspond Ã  ID_Task
+    private int proprioId; // Correspond Ã  ProprioID
+    private String status; // Correspond Ã  Status
+    private String description; // Correspond Ã  Description
+    private String dateLimite; // Correspond Ã  DateLimite
+    private String validation; // Correspond Ã  Validation
 
-		        // Paramétrer les valeurs
-		        preparedStatement.setInt(1, UserID);
-		        preparedStatement.setString(2,"Non effectuée");
-		        preparedStatement.setString(3, description);
-		        preparedStatement.setString(4, dateLimite);
-		        preparedStatement.setString(5,"En attente");
-		        
+    // Constructeur complet
+    public Task(int idTask, int proprioId, String status, String description, String dateLimite, String validation) {
+        this.idTask = idTask;
+        this.proprioId = proprioId;
+        this.status = status;
+        this.description = description;
+        this.dateLimite = dateLimite;
+        this.validation = validation;
+    }
 
-		        // Exécuter la requête
-		        int rowCount = preparedStatement.executeUpdate();
+    // Constructeur sans statut ni validation (valeurs par dÃ©faut)
+    public Task(int idTask, int proprioId, String description, String dateLimite) {
+        this.idTask = idTask;
+        this.proprioId = proprioId;
+        this.status = "Non effectuÃ©e"; // Valeur par dÃ©faut
+        this.description = description;
+        this.dateLimite = dateLimite;
+        this.validation = "En attente"; // Valeur par dÃ©faut
+    }
 
-		        // Vérifier si l'enregistrement a réussi
-		        if (rowCount > 0) {
-		            System.out.println("Tâche enregistrée ! Quelqu'un va bientôt venir vous aider");
-		        } else {
-		            System.out.println("Échec de l'enregistrement de la tâche. Veuillez réessayer.");
-		        }
+    // Getters et Setters
+    public int getIdTask() {
+        return idTask;
+    }
 
-		    } catch (SQLException e) {
-		        e.printStackTrace();
-		    }
-		}
-		
-		public static void updateStatus(int taskId, String newStatus) {
-	        String query = "UPDATE Task SET Status = ? WHERE ID_Task = ?";
-	        try (Connection connection = ConnexionDataBase.getConnexionDataBase();
-	            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+    public void setIdTask(int idTask) {
+        this.idTask = idTask;
+    }
 
-	            preparedStatement.setString(1, newStatus);
-	            preparedStatement.setInt(2, taskId);
+    public int getProprioId() {
+        return proprioId;
+    }
 
-	            int rowCount = preparedStatement.executeUpdate();
+    public void setProprioId(int proprioId) {
+        this.proprioId = proprioId;
+    }
 
-	            if (rowCount > 0) {
-	                System.out.println("Mise à jour du status réussie !");
-	            } else {
-	                System.out.println("Échec de la mise à jour du status. La demande pourrait ne pas exister.");
-	            }
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
-		
-		public static void updateValidation(int taskId, String newValidation) {
-	        String query = "UPDATE Task SET Validation = ? WHERE ID_Task = ?";
-	        try (Connection connection = ConnexionDataBase.getConnexionDataBase();
-	            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+    public String getStatus() {
+        return status;
+    }
 
-	            preparedStatement.setString(1, newValidation);
-	            preparedStatement.setInt(2, taskId);
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	            int rowCount = preparedStatement.executeUpdate();
+    public String getDescription() {
+        return description;
+    }
 
-	            if (rowCount > 0) {
-	                System.out.println("Mise à jour de la validation réussie !");
-	            } else {
-	                System.out.println("Échec de la mise à jour de la validation. La demande pourrait ne pas exister.");
-	            }
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDateLimite() {
+        return dateLimite;
+    }
+
+    public void setDateLimite(String dateLimite) {
+        this.dateLimite = dateLimite;
+    }
+
+    public String getValidation() {
+        return validation;
+    }
+
+    public void setValidation(String validation) {
+        this.validation = validation;
+    }
 }
