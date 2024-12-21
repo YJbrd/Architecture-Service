@@ -9,11 +9,9 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
-@ComponentScan(basePackages = "fr.insa.brauard.BDDConnexionService")
 public class BddConnexionServiceApplication {
 
-    @Bean(name = "bddRestTemplate") 
-    @Primary
+    @Bean
     @LoadBalanced
     public RestTemplate restTemplate() {
         return new RestTemplate();
