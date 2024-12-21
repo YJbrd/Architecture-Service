@@ -9,7 +9,6 @@ import org.springframework.web.client.RestTemplate;
 
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"fr.insa.brauard.AuthentificationService", "fr.insa.brauard.BDDConnexionService", "fr.insa.brauard.RequestService"})
 public class AuthentificationServiceApplication {
 	
 	@Bean
